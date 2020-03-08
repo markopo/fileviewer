@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 
 enum FileType {
    Folder,
@@ -43,29 +43,47 @@ export class AppComponent {
 
   fileList: File[] = [];
 
+  isToggleAll: boolean = true;
+
+  fileStr: string = '';
+
 
   constructor() {
   }
 
   ngOnInit() {
-      this.files = this.files.sort();
-
-      this.files.forEach(x => {
-
-           const splittedPath = x.split('/');
-
-           splittedPath.forEach(y => {
-                const files: File[] = this.pathInfo(splittedPath, x);
-                this.fileList.push(...files);
-           });
-      });
-
-      this.fileList
-        .sort((a, b) => a.level - b.level);
+      this.loadFiles();
 
   }
 
+
+  add() {
+
+    if (this.fileStr.length >= 1) {
+
+      if (this.files.find(x => x === this.fileStr)) {
+          alert('File exists already!');
+          return;
+      }
+
+      this.files.push(this.fileStr);
+      this.fileStr = '';
+    }
+
+    this.loadFiles();
+  }
+
+  toggleAll() {
+    this.isToggleAll = !this.isToggleAll;
+    this.fileList.forEach(x => x.isOpen = this.isToggleAll);
+  }
+
   toggle(file: File) {
+
+     if (file.fileType !== FileType.Folder) {
+       return;
+     }
+
      file.isOpen = !file.isOpen;
   }
 
@@ -93,18 +111,35 @@ export class AppComponent {
      return this.fileList.filter(x => x.level > x.parent && x.parent === parent && x.parentName === parentName);
   }
 
+  private loadFiles(): void {
+    this.files = this.files.sort();
+
+    this.files.forEach(x => {
+
+      const splittedPath = x.split('/');
+
+      splittedPath.forEach(y => {
+        const files: File[] = this.pathInfo(splittedPath, x);
+        this.fileList.push(...files);
+      });
+    });
+
+    this.fileList
+      .sort((a, b) => a.level - b.level);
+  }
+
   private pathInfo(paths: string[], origPath: string): File[] {
       const fileList: File[] = [];
-
       let index = 0;
       for(const path of paths) {
+          const parentLevel = index > 0 ? index - 1 : 0;
+          const parentName = paths[parentLevel];
 
-          if (!this.fileList.find(x => x.name == path && x.level == index)) {
+          if (!this.fileList.find(x => x.name == path && x.level == index && x.parentName === parentName)) {
 
-            const parentLevel = index > 0 ? index - 1 : 0;
             const file: File = {
               parent: parentLevel,
-              parentName: paths[parentLevel],
+              parentName: parentName,
               level: index,
               name: path,
               origPath: origPath,

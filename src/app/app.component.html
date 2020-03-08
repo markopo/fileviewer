@@ -6,8 +6,17 @@
     <div class="column">
       <div class="menu" >
         <p class="menu-label">
-          File List
+          <span>File List</span>
         </p>
+        <div>
+          <button class="button is-small" (click)="toggleAll()">
+              <span *ngIf="isToggleAll else noToggleTemplate">Collapse</span>
+              <ng-template #noToggleTemplate >
+                <span>Expand</span>
+              </ng-template>
+          </button>
+        </div>
+        <hr />
         <ul class="menu-list" >
           <li *ngFor="let parent of getLevelPaths(0)">
             <span (click)="toggle(parent)" class="level menu-label" [ngClass]="{ 'closed' : !parent.isOpen  }" ><i class="{{getFontClass(parent.fileType)}}"></i> <b>{{parent.name}}</b></span>
@@ -19,6 +28,15 @@
     <div class="column">
       <div>
         <pre>{{ files | json }}</pre>
+        <br />
+        <div>
+          <div class="field">
+            <div class="control">
+              <input class="input" placeholder="Add filepath" type="text" [(ngModel)]="fileStr" >
+            </div>
+          </div>
+          <button class="button is-small" (click)="add()" >Add</button>
+        </div>
       </div>
     </div>
   </div>
