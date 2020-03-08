@@ -1,0 +1,32 @@
+@import 'node_modules/bulma/bulma';
+
+.title {
+  background: #000;
+  color: #fff;
+  padding: .5rem;
+}
+
+.level {
+  color: #000;
+  padding: .5rem .75rem;
+  justify-content: flex-start;
+  align-items: center;
+
+  b {
+    margin-left: .5rem;
+  }
+
+  &.closed {
+    color: #666;
+
+    + ul, li, span {
+      display: none;
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+    background-color: #3273dc;
+    color: #fff;
+  }
+}
